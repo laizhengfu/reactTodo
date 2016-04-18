@@ -3,13 +3,58 @@
   "version": "1.0.0",
   "description": "== README",
   "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "babelify": "^7.2.0",
+    "browserify": "^13.0.0",
+    "browserify-global-shim": "^1.0.3",
+    "grunt": "^1.0.1",
+    "grunt-browserify": "^5.0.0",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-mocha-test": "^0.12.7",
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.7",
+    "jest-cli": "^11.0.2",
+    "jquery": "^2.2.3",
+    "mocha": "^2.4.5",
+    "react-addons-test-utils": "^15.0.1",
+    "react-dom": "^15.0.1",
+    "react-tools": "^0.13.3",
+    "reactify": "^1.1.1"
+  },
+  "dependencies": {
+    "react": "^15.0.1",
+    "react-addons-transition-group": "^15.0.1",
+    "react-dom": "^15.0.1",
+    "react-google-recaptcha": "^0.5.2",
+    "react-redux": "^4.4.5",
+    "react-typeahead": "^1.1.9",
+    "redux": "^3.4.0"
+  },
+  "scripts": {
+    "test": "jest",
+    "test-debug": "node-debug --harmony ./node_modules/jest-cli/bin/jest.js --runInBand"
+  },
+  "jest": {
+    "rootDir": "app/frontend",
+    "scriptPreprocessor": "<rootDir>/spec/preprocessor.js",
+    "globals": {
+      "__APPDIR__": "<rootDir>/js/"
+    },
+    "setupTestFrameworkScriptFile": "<rootDir>/__test_support__/testSupport.js",
+    "unmockedModulePathPatterns": [
+      "node_modules/react",
+      "app/frontend/__test_support__"
+    ]
+  },
+  "browserify": {
+    "transform": [
+      "reactify",
+      "browserify-global-shim"
+    ]
+  }
 }
