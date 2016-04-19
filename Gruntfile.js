@@ -5,6 +5,10 @@ module.exports = function(grunt) {
       mydemo: {
         src: './app/frontend/js/mydemo/app.js',
         dest: './app/assets/javascripts/mydemo_bundle.js'
+      },
+      comment: {
+        src: './app/frontend/js/comment/app.js',
+        dest: './app/assets/javascripts/comment_bundle.js'
       }
     },
     watch: {
@@ -12,19 +16,22 @@ module.exports = function(grunt) {
         files: [
           './app/frontend/js/mydemo/*.js',
           './app/frontend/js/mydemo/**/*.js',
-          './app/frontend/js/mydemo/**/*.jsx',
+          './app/frontend/js/mydemo/**/*.jsx'
         ],
         tasks: [
           'browserify:mydemo'
         ]
       },
-      files: [
-        './app/frontend/js/mydemo/**/*.js',
-        './app/frontend/js/mydemo/**/*.jsx',
-      ],
-      tasks: [
-        'browserify:mydemo'
-      ]
+      comment: {
+        files: [
+          './app/frontend/js/comment/*.js',
+          './app/frontend/js/comment/**/*.js',
+          './app/frontend/js/comment/**/*.jsx'
+        ],
+        tasks: [
+          'browserify:comment'
+        ]
+      }
     }
   });
 

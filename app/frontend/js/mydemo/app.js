@@ -1,6 +1,7 @@
-var jq = require('jquery');
-jq(function(){
-  var message = 'aaa';
-  console.log(message);
-  console.log(message + '!');
-});
+var React = require('react');
+var ReactDOM = require('react-dom');
+var Example = require('./components/example.jsx');
+ReactDOM.render(
+    <Example />,
+    document.getElementById('example')
+);
