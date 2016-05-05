@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'api/comments'
+
   get 'comment/index'
 
   root 'todo#index'

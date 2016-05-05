@@ -3,6 +3,6 @@ var ReactDOM = require('react-dom');
 var CommentBox = require('./components/CommentBox.jsx');
 var CommentData = require('./components/data.jsx');
 ReactDOM.render(
-  <CommentBox data={CommentData} />,
+  <CommentBox url="/api/comments" />,
   document.getElementById('content')
 );
