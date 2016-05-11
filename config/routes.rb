@@ -1,9 +1,12 @@
 Rails.application.routes.draw do
-  get 'api/comments'
-
   get 'comment/index'
 
   root 'todo#index'
+  namespace :api, defaults: { format: :json } do
+    get 'comments' => 'comments#index'
+    post 'comments' => 'comments#create'
+    delete 'comments/:id' => 'comments#delete'
+  end
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

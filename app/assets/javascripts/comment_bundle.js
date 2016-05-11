@@ -4,7 +4,7 @@ var ReactDOM = require('react-dom');
 var CommentBox = require('./components/CommentBox.jsx');
 var CommentData = require('./components/data.jsx');
 ReactDOM.render(
-  React.createElement(CommentBox, {url: "/api/comments"}),
+  React.createElement(CommentBox, {url: "/api/comments", pollInterval: 2000}),
   document.getElementById('content')
 );
 
@@ -12,9 +12,23 @@ ReactDOM.render(
 var React = require('react');
 var marked = require('marked');
 var Comment = React.createClass({displayName: "Comment",
+  handleDoubleClick: function () {
+    $.ajax({
+      url: this.props.url+ '/'+ this.props.commentId,
+      dataType: 'json',
+      type: 'DELETE',
+      data: {id: this.props.commentId},
+      success: function (data) {
+
+      }.bind(this),
+      error: function (xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
   render: function () {
     return (
-      React.createElement("div", {className: "comment"}, 
+      React.createElement("div", {className: "comment", onDoubleClick: this.handleDoubleClick}, 
         React.createElement("h2", {className: "commentAuthor"}, 
           this.props.author
         ), 
@@ -35,10 +49,28 @@ var CommentBox = React.createClass({displayName: "CommentBox",
   getInitialState: function () {
     return {data: []}
   },
-  componentDidMount: function () {
+  loadCommentsFromServer: function () {
     $.ajax({
       url: this.props.url,
       dataType: 'json',
+      success: function (data) {
+        this.setState({data: data});
+      }.bind(this),
+      error: function (xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
+  componentDidMount: function () {
+    this.loadCommentsFromServer();
+    setInterval(this.loadCommentsFromServer, this.props.pollInterval);
+  },
+  handleCommentSubmit: function (comment) {
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      type: 'POST',
+      data: comment,
       success: function (data) {
         this.setState({data: data});
       }.bind(this),
@@ -51,8 +83,8 @@ var CommentBox = React.createClass({displayName: "CommentBox",
     return (
       React.createElement("div", {className: "commentBox"}, 
         React.createElement("h1", null, "Comments"), 
-        React.createElement(CommentList, {data: this.state.data}), 
-        React.createElement(CommentForm, null)
+        React.createElement(CommentList, {url: this.props.url, data: this.state.data}), 
+        React.createElement(CommentForm, {onCommentSubmit: this.handleCommentSubmit})
       )
     );
   }
@@ -63,10 +95,42 @@ module.exports = CommentBox;
 },{"./CommentForm.jsx":4,"./CommentList.jsx":5,"jquery":33,"react":173}],4:[function(require,module,exports){
 var React = require('react');
 var CommentForm = React.createClass({displayName: "CommentForm",
+  getInitialState: function () {
+    return {author: '', text: ''}
+  },
+  handleAuthorChange: function (e) {
+    this.setState({author: e.target.value});
+  },
+  handleTextChange: function (e) {
+    this.setState({text: e.target.value});
+  },
+  handleSubmit: function (e) {
+    e.preventDefault();
+    var author = this.state.author.trim();
+    var text = this.state.text.trim();
+    if (!text || !author) {
+      alert('validate failed!');
+      return;
+    }
+    this.props.onCommentSubmit({author: author, text: text});
+    this.setState({author: '', text: ''});
+  },
   render: function () {
     return (
-      React.createElement("div", {className: "commentForm"}, 
-        "CommentForm!"
+      React.createElement("form", {className: "commentForm", onSubmit: this.handleSubmit}, 
+        React.createElement("input", {
+          value: this.state.author, 
+          type: "text", 
+          placeholder: "Your name", 
+          onChange: this.handleAuthorChange}
+        ), 
+        React.createElement("input", {
+          value: this.state.text, 
+          type: "text", 
+          placeholder: "Say something...", 
+          onChange: this.handleTextChange}
+        ), 
+        React.createElement("input", {type: "submit", value: "Post"})
       )
     );
   }
@@ -79,9 +143,10 @@ var React = require('react');
 var Comment = require('./Comment.jsx');
 var CommentList = React.createClass({displayName: "CommentList",
   render: function () {
+    var url = this.props.url;
     var commentNodes = this.props.data.map(function (comment) {
       return (
-        React.createElement(Comment, {author: comment.author}, 
+        React.createElement(Comment, {url: url, commentId: comment.id, key: comment.id, author: comment.author}, 
           comment.text
         )
       );
